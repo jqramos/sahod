@@ -8,6 +8,9 @@ export class TaxInfoModel{
     riceSubsidy: number;
     otherAllowance: number;
     payType: string;
+    payLevel: number;
+    salaryOnPayType: number;
+    sector: string;
     constructor() {
         this.basicSalary = 0;
         this.taxableAllowance = 0;
@@ -18,6 +21,9 @@ export class TaxInfoModel{
         this.riceSubsidy = 0;
         this.otherAllowance = 0;
         this.payType = 'monthly';
+        this.payLevel = 1;
+        this.salaryOnPayType = 1;
+        this.sector = 'private';
     }
 }
 
@@ -31,6 +37,7 @@ export class PayoutSummary {
     philhealth: number;
     hdmf: number;
     sss: number;
+    gsis: number;
     deductibleAmount: number;
 
     constructor() {
@@ -43,6 +50,36 @@ export class PayoutSummary {
         this.philhealth = 0;
         this.hdmf = 0;
         this.sss = 0;
+        this.gsis = 0;
         this.deductibleAmount = 0;
+    }
+}
+
+
+export class TaxParameters {
+    levelOne: PayCriteria;
+    levelTwo: PayCriteria;
+    levelThree: PayCriteria;
+    levelFour: PayCriteria;
+    levelFive: PayCriteria;
+    levelSix: PayCriteria;
+    constructor() {
+        this.levelOne = new PayCriteria();
+        this.levelTwo = new PayCriteria();
+        this.levelThree = new PayCriteria();
+        this.levelFour = new PayCriteria();
+        this.levelFive = new PayCriteria();
+        this.levelSix = new PayCriteria();
+
+    }
+}
+export class PayCriteria {
+    minWithTax: number;
+    percentage: number ;
+    amount: number;
+    constructor() {
+        this.minWithTax = 0;
+        this.percentage = 0;
+        this.amount = 0;
     }
 }
