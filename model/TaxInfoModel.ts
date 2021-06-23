@@ -39,6 +39,7 @@ export class PayoutSummary {
     sss: number;
     gsis: number;
     deductibleAmount: number;
+    [key: string]: any
 
     constructor() {
         this.taxableAmount = 0;

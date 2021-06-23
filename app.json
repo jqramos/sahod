@@ -27,7 +27,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "light",
+      "package": "com.tool.sahod"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 
 import { Text, View } from '../components/Themed';
 import InputInfo from "../components/InputInfo";
-
+export const navigationRef = React.createRef();
 export default function TabOneScreen() {
   return (
     <View style={styles.container}>
@@ -15,6 +15,7 @@ export default function TabOneScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    fontFamily: 'roboto'
   },
   title: {
     fontSize: 20,

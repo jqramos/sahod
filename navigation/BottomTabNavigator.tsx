@@ -12,7 +12,8 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import TabOneScreen from '../screens/TabOneScreen';
 import TabTwoScreen from '../screens/TabTwoScreen';
-import { BottomTabParamList, TabOneParamList, TabTwoParamList } from '../types';
+import {BottomTabParamList, PayoutSummaryList, TabOneParamList, TabTwoParamList} from '../types';
+import PayoutSummaryScreen from "../screens/PayoutSummaryScreen";
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
@@ -22,7 +23,7 @@ export default function BottomTabNavigator() {
   return (
     <BottomTab.Navigator
       initialRouteName="TabOne"
-      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
+      tabBarOptions={{ activeTintColor: Colors[colorScheme].tint, keyboardHidesTabBar: true }}>
       <BottomTab.Screen
         name="TabOne"
         component={TabOneNavigator}
@@ -50,14 +51,21 @@ function TabBarIcon(props: { name: React.ComponentProps<typeof Ionicons>['name']
 // Each tab has its own navigation stack, you can read more about this pattern here:
 // https://reactnavigation.org/docs/tab-based-navigation#a-stack-navigator-for-each-tab
 const TabOneStack = createStackNavigator<TabOneParamList>();
+const PayoutSummaryStack = createStackNavigator<PayoutSummaryList>();
 
 function TabOneNavigator() {
   return (
-    <TabOneStack.Navigator>
+    <TabOneStack.Navigator keyboardHandlingEnabled={true}>
       <TabOneStack.Screen
         name="TabOneScreen"
         component={TabOneScreen}
-        options={{ headerTitle: '' }}
+        options={{ headerTitle: 'Sahod' }}
+      />
+      <PayoutSummaryStack.Screen
+        name="PayoutSummaryScreen"
+        component={PayoutSummaryScreen}
+        initialParams={{data: null}}
+        options={{ headerTitle: 'Summary' }}
       />
     </TabOneStack.Navigator>
   );
@@ -76,3 +84,6 @@ function TabTwoNavigator() {
     </TabTwoStack.Navigator>
   );
 }
+
+
+

@@ -1,17 +1,20 @@
 import * as WebBrowser from 'expo-web-browser';
 import React, {useEffect, useReducer, useState} from 'react';
-import {Alert, StyleSheet, Text} from 'react-native';
+import {Alert, Platform, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { View } from './Themed';
-import {Checkbox, Divider, List, Menu, Modal, Portal, TextInput} from 'react-native-paper';
+import {Checkbox, Divider, List, Menu, Modal, Portal, TextInput, Title} from 'react-native-paper';
 import { Button } from 'react-native-paper';
 import  DropDown  from  'react-native-paper-dropdown';
 import {PayoutSummary, TaxInfoModel} from "../model/TaxInfoModel";
 import {computeTax} from "../api/taxService";
+import NumberFormat from 'react-number-format';
+import {useNavigation} from "@react-navigation/native";
+import { KeyboardAvoidingView } from 'react-native';
 
 
 
-export default function InputInfo({ path }: { path: string }) {
+export default function InputInfo({ path }: { path: string } ) {
     const [showDropDown, setShowDropDown] = useState(false);
 
     const [sector, setSector] = useState('private');
@@ -26,6 +29,7 @@ export default function InputInfo({ path }: { path: string }) {
     const hideModal = () => setVisible(false);
     const containerStyle = {backgroundColor: 'white', padding: 20};
 
+    const navigation = useNavigation();
     const  sectorList = [
         { label:  'Private', value:  'private' },
         { label:  'Public',value:  'public' }
@@ -74,11 +78,12 @@ export default function InputInfo({ path }: { path: string }) {
     }
     function updateTax() {
         let temp = taxInfo;
+        console.log(taxInfo.basicSalary)
         setTaxInfo(temp);
         if (taxInfo.basicSalary > 0 ) {
             let result = computeTax(temp);
             setPayoutSummary(result);
-            console.log(result)
+
         }
     }
 
@@ -116,21 +121,24 @@ export default function InputInfo({ path }: { path: string }) {
         updateTax();
     }
 
+    // @ts-ignore
+    // @ts-ignore
     return (
-        <View>
+        <View style={{height: '100%'}}>
             <View style={styles.mainContainer}>
                 <View
-                    style={{flex: 3, marginTop: 7}}>
-                    <Button
-                        labelStyle={{fontSize: 12, flexShrink: 1 }}
-                        mode="contained"
-                        onPress={() => togglePayTypeModal(true)}
-                    >
-                        {payModeSelect.name}
-                    </Button>
+                    style={{flex: 3.8, marginTop: 7}}>
+                       <Button
+                            labelStyle={styles.payTypeBtn}
+                            mode="contained"
+                            color="#2c365a"
+                            onPress={() => togglePayTypeModal(true)}
+                        >
+                            {payModeSelect.name}
+                        </Button>
                 </View>
                 <View
-                    style={{flex: 8, paddingLeft: 10}}>
+                    style={{flex: 7.2, paddingLeft: 10}}>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => {
@@ -144,8 +152,9 @@ export default function InputInfo({ path }: { path: string }) {
                     />
                 </View>
             </View>
-            <View>
+            <View style={styles.dropDown}>
                 <DropDown
+                    dropDownStyle={styles.dropDown}
                     label={'Sector'}
                     mode={'outlined'}
                     value={sector}
@@ -169,7 +178,7 @@ export default function InputInfo({ path }: { path: string }) {
                 {checkList.map((data, index) => {
                     return data.isChecked ?
                         <View>
-                            <TextInput style={styles.input}
+                            <TextInput style={styles.allowInput}
                                        key={data.id}
                                 mode="outlined"
                                 onChangeText={(value) => {
@@ -181,20 +190,32 @@ export default function InputInfo({ path }: { path: string }) {
                         : null
                 })}
             </View>
-            <View style={styles.mainContainer}>
+            <View style={styles.addContainer}>
                 <Button
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={styles.addBtn}
                     mode="contained"
-                    onPress={showModal}
+                    color="#2c365a"
+                    onPress={showModal} icon="plus"
                 >
-                    + More Details
+                    Add More Details
                 </Button>
             </View>
-            <View>
-                <Text>
-                    {payoutSummary.netSalary}
-                </Text>
-            </View>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.bottomView}>
+                <View  style={{ alignSelf: 'stretch'}}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.navigate('PayoutSummaryScreen',  payoutSummary)
+                        }}
+                        style={styles.summaryButton} activeOpacity={.7}>
+                        <Text style={styles.payoutTxt}>
+                            PAYOUT
+                        </Text>
+                        <Text style={styles.payoutValue}>
+                            <NumberFormat value={payoutSummary.netSalary.toFixed(2)} displayType={'text'} renderText={value => <Text>{value}</Text>} thousandSeparator={true} prefix={'₱ '} />
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
             <Portal>
                 <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
                     <View>
@@ -231,6 +252,9 @@ export default function InputInfo({ path }: { path: string }) {
 
 const containerStyle = {backgroundColor: 'white', padding: 20};
 const styles = StyleSheet.create({
+    mainFontFam: {
+        fontFamily: "roboto"
+    },
     mainContainer: {
         flexDirection: "row",
         flexWrap: "wrap",
@@ -238,6 +262,16 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         paddingLeft: 12,
         paddingBottom: 10
+    },
+    addContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        textAlign: "center",
+        alignSelf: "center",
+        paddingTop: 5,
+        paddingLeft: 12,
+        paddingBottom: 10,
+        marginTop: 30
     },
     getStartedContainer: {
         alignItems: "flex-start",
@@ -250,8 +284,69 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 35,
+        paddingRight: 10
+    },
+    allowInput: {
+        height: 35,
+        paddingRight: 10,
+        paddingLeft: 10,
+        marginTop: 10
     },
     periodBtn: {
         fontSize: 7
+    },
+    payTypeBtn: {
+        fontSize: 12,
+        flexShrink: 1,
+        borderRadius: 10,
+        fontFamily: 'roboto-bold'
+    },
+    summaryButton: {
+        marginRight:10,
+        marginLeft:10,
+        marginTop:10,
+        paddingTop:20,
+        paddingBottom:20,
+        backgroundColor:'#2c365a',
+        borderRadius:28,
+        borderWidth: 1,
+        borderColor: '#fff',
+        flexDirection: 'row',
+        flexWrap:'wrap'
+    },
+    payoutTxt: {
+        flex: 3,
+        textAlign: "center",
+        color: 'white',
+        fontSize: 23,
+        marginLeft: 10,
+        fontFamily: "roboto"
+    },
+    payoutValue: {
+        flex: 7,
+        textAlign: "center",
+        color: 'white',
+        fontWeight: "900",
+        fontSize: 25,
+        fontFamily: "roboto-bold"
+    },
+    bottomView: {
+        width: '100%',
+        height: 100,
+        justifyContent: 'center',
+        flexDirection: "column",
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0,
+        alignContent:"flex-end",
+
+    },
+    addBtn: {
+        fontSize: 15,
+        fontFamily: 'roboto-bold'
+    },
+    dropDown: {
+        marginLeft: 10,
+        marginRight: 10
     }
 });

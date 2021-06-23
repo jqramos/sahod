@@ -11,25 +11,34 @@ export const computeTax = (payData: TaxInfoModel) => {
     payoutSummary.philhealth = computePhilHealth(payData.basicSalary);
     payoutSummary.hdmf = computePagibig(payData.basicSalary);
     payoutSummary.gsis = payData.sector == 'public' ? payData.basicSalary * GenericConstants.percentage.gsis : 0;
-
+    payoutSummary.taxInfo = payData;
     switch (payData.payType) {
         case 'daily':
             payData.salaryOnPayType = (payData.basicSalary * 12) / 261;
             payoutSummary.philhealth =  payoutSummary.philhealth/21
             payoutSummary.hdmf =  payoutSummary.hdmf/21
             payoutSummary.sss =  payoutSummary.sss/21
+            payoutSummary.sss =  payoutSummary.gsis/21
             payoutSummary = computeTaxPerPayLevel(payData, TaxConstants.daily, payoutSummary);
+            payoutSummary.netSalary = payoutSummary.netSalary * 21;
             break;
         case 'weekly':
             payoutSummary.philhealth =  payoutSummary.philhealth/4
             payoutSummary.hdmf =  payoutSummary.hdmf/4
             payoutSummary.sss =  payoutSummary.sss/4
+            payoutSummary.sss =  payoutSummary.gsis/4
             payData.salaryOnPayType = (payData.basicSalary * 12) / 52;
             payoutSummary = computeTaxPerPayLevel(payData, TaxConstants.weekly, payoutSummary);
+            payoutSummary.netSalary = payoutSummary.netSalary * 4;
             break;
         case 'semiMonthly':
+            payoutSummary.philhealth =  payoutSummary.philhealth/2
+            payoutSummary.hdmf =  payoutSummary.hdmf/2
+            payoutSummary.sss =  payoutSummary.sss/2
+            payoutSummary.sss =  payoutSummary.gsis/2
             payData.salaryOnPayType = payData.basicSalary/ 2;
             payoutSummary = computeTaxPerPayLevel(payData, TaxConstants.semiMonthly, payoutSummary);
+            payoutSummary.netSalary = payoutSummary.netSalary * 2;
             break;
         case 'monthly':
             payData.salaryOnPayType = payData.basicSalary;
